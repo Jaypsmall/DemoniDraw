@@ -24,7 +24,9 @@ class AddGestureActivity : ComponentActivity(), GestureOverlayView.OnGesturePerf
         val overlay = GestureOverlayView(this).apply {
             gestureColor = android.graphics.Color.YELLOW
             uncertainGestureColor = android.graphics.Color.GRAY
-            gestureStrokeWidth = 10f
+            gestureStrokeWidth = 12f
+            // Permitir múltiples trazos para gestos más complejos
+            gestureStrokeType = GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE
             addOnGesturePerformedListener(this@AddGestureActivity)
         }
         

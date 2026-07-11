@@ -4,6 +4,7 @@ import android.content.Context
 import android.gesture.Gesture
 import android.gesture.GestureLibrary
 import android.gesture.GestureLibraries
+import android.gesture.GestureOverlayView
 import java.io.File
 
 class GestureManager(private val context: Context) {
@@ -16,6 +17,8 @@ class GestureManager(private val context: Context) {
     }
 
     fun addGesture(name: String, gesture: Gesture) {
+        // Importante: Limpiamos gestos anteriores con el mismo nombre para evitar duplicados que confundan al motor
+        gestureLibrary.removeEntry(name)
         gestureLibrary.addGesture(name, gesture)
         gestureLibrary.save()
     }
@@ -33,8 +36,17 @@ class GestureManager(private val context: Context) {
     fun recognize(gesture: Gesture): String? {
         val predictions = gestureLibrary.recognize(gesture)
         if (predictions.isNotEmpty()) {
+            // Ordenamos por puntuación de mayor a menor (ya vienen ordenadas, pero aseguramos)
             val bestMatch = predictions[0]
-            if (bestMatch.score > 1.0) { // Threshold for recognition
+            
+            android.util.Log.d("GestureManager", "Analizando gesto...")
+            predictions.forEach { 
+                android.util.Log.d("GestureManager", "Candidato: ${it.name} - Score: ${it.score}")
+            }
+
+            // Un score de 1.0 suele ser una coincidencia pobre si hay muchos gestos.
+            // Subimos a un mínimo de 1.2 para evitar que ejecute el primero que pille por defecto.
+            if (bestMatch.score > 1.2) {
                 return bestMatch.name
             }
         }
