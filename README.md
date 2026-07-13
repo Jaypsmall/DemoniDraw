@@ -38,4 +38,5 @@ Herramienta avanzada de automatización gestual protegida bajo propiedad intelec
   <img src="https://github.com/user-attachments/assets/1be88d44-c6af-4992-a39d-fa33ae0216b5" width="30%" />
 </p>
 
-
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=flat&logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=flat&logo=android&logoColor=white)
