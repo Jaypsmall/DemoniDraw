@@ -65,7 +65,7 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
         }
 
         val notification: Notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Demonidraw")
+            .setContentTitle("DemoniDraw")
             .setContentText("Desliza a la izquierda para dibujar")
             .setSmallIcon(R.drawable.demonidraw_icon)
             .build()
@@ -82,7 +82,7 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
         }
 
         val params = WindowManager.LayoutParams(
-            80, // Un poco más ancho para facilitar el toque
+            80, 
             250,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
@@ -112,8 +112,27 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
                 return true
             }
         })
+        
+        // Detector de 3 toques para cerrar el servicio
+        var lastClickTime: Long = 0
+        var clickCount = 0
 
         floatingTrigger.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime < 300) {
+                    clickCount++
+                } else {
+                    clickCount = 1
+                }
+                lastClickTime = currentTime
+                
+                if (clickCount == 3) {
+                    Toast.makeText(this@FloatingService, "Cerrando DemoniDraw", Toast.LENGTH_SHORT).show()
+                    stopSelf()
+                    return@setOnTouchListener true
+                }
+            }
             gestureDetector.onTouchEvent(event)
             true
         }
@@ -126,7 +145,6 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
             gestureColor = Color.YELLOW
             uncertainGestureColor = Color.argb(100, 255, 255, 0)
             gestureStrokeWidth = 15f
-            // Fundamental: configurar el mismo tipo de trazo que al guardar
             gestureStrokeType = GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE
             orientation = GestureOverlayView.ORIENTATION_HORIZONTAL
             isEventsInterceptionEnabled = true
@@ -139,7 +157,6 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            // Quitamos el forzado de orientación aquí para evitar el giro de la interfaz
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
@@ -164,7 +181,6 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
     private fun showPizarra() {
         gestureOverlay.visibility = View.VISIBLE
         val params = gestureOverlay.layoutParams as WindowManager.LayoutParams
-        // Quitamos FLAG_NOT_FOCUSABLE para que pueda capturar gestos, pero mantenemos la transparencia
         params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
         windowManager.updateViewLayout(gestureOverlay, params)
     }
@@ -185,6 +201,7 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
                 Toast.makeText(this, "Gesto no reconocido", Toast.LENGTH_SHORT).show()
             }
         }
+        // Siempre cerramos la pizarra después de intentar reconocer un gesto
         hidePizarra()
     }
 
@@ -197,23 +214,17 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
                 if (entry != null) {
                     if (entry.isShellCommand) {
                         serviceScope.launch(Dispatchers.IO) {
-                            val success = ShellUtils.executeCommand(entry.action)
-                            withContext(Dispatchers.Main) {
-                                if (!success) {
-                                    Toast.makeText(this@FloatingService, "Error ejecutando comando root", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            ShellUtils.executeCommand(entry.action)
                         }
                         Toast.makeText(this@FloatingService, "Ejecutando: $name", Toast.LENGTH_SHORT).show()
                     } else {
-                        // Lanzar aplicación por nombre de paquete
                         val launchIntent = packageManager.getLaunchIntentForPackage(entry.action.trim())
                         if (launchIntent != null) {
                             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             startActivity(launchIntent)
                             Toast.makeText(this@FloatingService, "Abriendo: $name", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(this@FloatingService, "No se pudo abrir la app: ${entry.action}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@FloatingService, "Error: App no encontrada", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
