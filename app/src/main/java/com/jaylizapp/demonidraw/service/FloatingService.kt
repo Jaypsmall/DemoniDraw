@@ -125,9 +125,7 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
         gestureOverlay = GestureOverlayView(this).apply {
             gestureColor = Color.YELLOW
             uncertainGestureColor = Color.argb(100, 255, 255, 0)
-            gestureStrokeWidth = 15f
-            // Fundamental: configurar el mismo tipo de trazo que al guardar
-            gestureStrokeType = GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE
+            gestureStrokeWidth = 20f
             orientation = GestureOverlayView.ORIENTATION_HORIZONTAL
             isEventsInterceptionEnabled = true
             setBackgroundColor(Color.argb(100, 0, 0, 0))
