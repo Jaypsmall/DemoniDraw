@@ -16,25 +16,37 @@ class GestureManager(private val context: Context) {
     }
 
     fun addGesture(name: String, gesture: Gesture) {
+        // Importante: Limpiamos gestos anteriores con el mismo nombre para evitar duplicados que confundan al motor
+        gestureLibrary.removeEntry(name)
         gestureLibrary.addGesture(name, gesture)
         gestureLibrary.save()
+        // Forzamos recarga tras guardar
+        gestureLibrary.load()
     }
 
     fun removeGesture(name: String, gesture: Gesture) {
         gestureLibrary.removeGesture(name, gesture)
         gestureLibrary.save()
+        gestureLibrary.load()
     }
     
     fun removeAllGestures(name: String) {
         gestureLibrary.removeEntry(name)
         gestureLibrary.save()
+        gestureLibrary.load()
     }
 
     fun recognize(gesture: Gesture): String? {
+        // Recargamos antes de reconocer para asegurar que tenemos los últimos cambios
+        gestureLibrary.load()
         val predictions = gestureLibrary.recognize(gesture)
         if (predictions.isNotEmpty()) {
             val bestMatch = predictions[0]
-            if (bestMatch.score > 1.0) { // Threshold for recognition
+            
+            android.util.Log.d("GestureManager", "Analizando: ${bestMatch.name} - Score: ${bestMatch.score}")
+            
+            // Bajamos a 1.0 para que sea más permisivo pero siga siendo preciso
+            if (bestMatch.score > 1.0) {
                 return bestMatch.name
             }
         }

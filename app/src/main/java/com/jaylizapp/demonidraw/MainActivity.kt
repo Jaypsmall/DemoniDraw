@@ -300,6 +300,13 @@ fun DrawerContent(isDarkMode: Boolean) {
             style = MaterialTheme.typography.bodySmall,
             color = AshGrey
         )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            "Created by JAYLIZ with ❤️",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            style = MaterialTheme.typography.bodySmall,
+            color = AshGrey
+        )
     }
 }
 
