@@ -295,12 +295,12 @@ fun DrawerContent(isDarkMode: Boolean) {
         Spacer(modifier = Modifier.weight(1f))
         
         Text(
-            "v1.0 - Edición Demoniaca",
+            "v1.0.1 - Edición Demoniaca",
             modifier = Modifier.align(Alignment.CenterHorizontally),
             style = MaterialTheme.typography.bodySmall,
             color = AshGrey
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(
             "Created by JAYLIZ with ❤️",
             modifier = Modifier.align(Alignment.CenterHorizontally),
