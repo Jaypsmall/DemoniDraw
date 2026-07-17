@@ -10,10 +10,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -21,8 +23,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -50,12 +56,19 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             var isDarkMode by remember { mutableStateOf(true) }
+            var isEnglish by remember { mutableStateOf(false) }
             
             DemonidrawTheme(darkTheme = isDarkMode) {
                 // Modo Luz: Fondo plateado suave para que resalte el amarillo
                 val backgroundColor = if (isDarkMode) AbyssBlack else Color(0xFFD1D5D8) // ShinySilver-ish
                 Surface(color = backgroundColor) {
-                    MainScreen(viewModel, isDarkMode, onThemeToggle = { isDarkMode = !isDarkMode })
+                    MainScreen(
+                        viewModel, 
+                        isDarkMode, 
+                        isEnglish,
+                        onThemeToggle = { isDarkMode = !isDarkMode },
+                        onLanguageToggle = { isEnglish = !isEnglish }
+                    )
                 }
             }
         }
@@ -63,17 +76,18 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FadingSeparator(isDarkMode: Boolean) {
-    val centerColor = if (isDarkMode) DeepBlood else HellRed
+fun FadingSeparator() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(1.dp)
+            .height(3.dp)
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        centerColor,
+                        Color(0xFFC0C0C0), // Plata
+                        Color.White,       // Brillo central
+                        Color(0xFFC0C0C0), // Plata
                         Color.Transparent
                     )
                 )
@@ -82,25 +96,43 @@ fun FadingSeparator(isDarkMode: Boolean) {
 }
 
 @Composable
-fun StyledTitle(showEmoji: Boolean = true, isDarkMode: Boolean = true, fontSize: Int = 24, isCentered: Boolean = false) {
-    val drawColor = if (isDarkMode) Color.White else AbyssBlack
-    Text(
-        buildAnnotatedString {
-            withStyle(style = SpanStyle(color = Color.Red)) {
-                append("De")
-            }
-            withStyle(style = SpanStyle(color = Color.Yellow)) {
-                append("moni")
-            }
-            withStyle(style = SpanStyle(color = drawColor)) {
-                append("Draw")
-            }
+fun StyledTitle(showEmoji: Boolean = true, fontSize: Int = 24, isCentered: Boolean = false) {
+    val titleShadow = Shadow(
+        color = Color.Black.copy(alpha = 0.8f),
+        offset = Offset(6f, 6f),
+        blurRadius = 12f
+    )
+
+    val styledTitle = buildAnnotatedString {
+        withStyle(style = SpanStyle(
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.ExtraBold,
+            shadow = titleShadow
+        )) {
+            append("De")
+        }
+        withStyle(style = SpanStyle(
+            color = MaterialTheme.colorScheme.tertiary,
+            fontWeight = FontWeight.ExtraBold,
+            shadow = titleShadow
+        )) {
+            append("moni")
+        }
+        withStyle(style = SpanStyle(
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.ExtraBold,
+            shadow = titleShadow
+        )) {
+            append("Draw")
             if (showEmoji) {
                 append(" 😈")
             }
-        },
-        fontWeight = FontWeight.Bold,
-        fontSize = fontSize.sp,
+        }
+    }
+
+    Text(
+        text = styledTitle,
+        style = MaterialTheme.typography.headlineMedium.copy(fontSize = fontSize.sp),
         textAlign = if (isCentered) TextAlign.Center else TextAlign.Start,
         modifier = if (isCentered) Modifier.fillMaxWidth() else Modifier
     )
@@ -108,7 +140,13 @@ fun StyledTitle(showEmoji: Boolean = true, isDarkMode: Boolean = true, fontSize:
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: GestureViewModel, isDarkMode: Boolean, onThemeToggle: () -> Unit) {
+fun MainScreen(
+    viewModel: GestureViewModel, 
+    isDarkMode: Boolean, 
+    isEnglish: Boolean,
+    onThemeToggle: () -> Unit,
+    onLanguageToggle: () -> Unit
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val gestures by viewModel.gestures.collectAsState()
@@ -124,96 +162,96 @@ fun MainScreen(viewModel: GestureViewModel, isDarkMode: Boolean, onThemeToggle: 
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(300.dp),
                 drawerContainerColor = backgroundColor,
-                drawerContentColor = contentColor
+                modifier = Modifier.width(300.dp) 
             ) {
-                DrawerContent(isDarkMode)
+                DrawerContent(isDarkMode, isEnglish, onLanguageToggle)
             }
         }
     ) {
         Scaffold(
             containerColor = backgroundColor,
             topBar = {
-                TopAppBar(
-                    title = { StyledTitle(isDarkMode = isDarkMode, fontSize = 28) },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = contentColor)
+                Column {
+                    TopAppBar(
+                        title = { StyledTitle(fontSize = 28) },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = contentColor)
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = backgroundColor,
+                            titleContentColor = contentColor
+                        ),
+                        actions = {
+                            IconButton(onClick = onThemeToggle) {
+                                Icon(
+                                    Icons.Default.Nightlight,
+                                    contentDescription = "Toggle Theme",
+                                    tint = contentColor
+                                )
+                            }
                         }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = backgroundColor,
-                        titleContentColor = contentColor
-                    ),
-                    actions = {
-                        IconButton(onClick = onThemeToggle) {
-                            Icon(
-                                Icons.Default.Nightlight,
-                                contentDescription = "Toggle Theme",
-                                tint = contentColor
-                            )
-                        }
-                    }
-                )
+                    )
+                    FadingSeparator()
+                }
             },
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = { showAddDialog = true },
                     containerColor = HellRed,
                     contentColor = Color.White,
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
+                        .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                 ) {
                     Icon(Icons.Default.Add, "Add")
                 }
             }
         ) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-                FadingSeparator(isDarkMode)
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    DemoniButton(
-                        text = "Iniciar Botón Flotante",
-                        isDarkMode = isDarkMode,
-                        onClick = {
-                            if (!Settings.canDrawOverlays(context)) {
-                                val intent = Intent(
-                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                    "package:${context.packageName}".toUri()
-                                )
-                                context.startActivity(intent)
-                            } else {
-                                val intent = Intent(context, FloatingService::class.java)
-                                context.startForegroundService(intent)
-                                Toast.makeText(context, "Servicio iniciado", Toast.LENGTH_SHORT).show()
-                            }
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                // --- BOTONES PRINCIPALES ---
+                DemoniButton(
+                    text = if (isEnglish) "Start Floating Button" else "Iniciar Botón Flotante",
+                    onClick = {
+                        if (!Settings.canDrawOverlays(context)) {
+                            val intent = Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                "package:${context.packageName}".toUri()
+                            )
+                            context.startActivity(intent)
+                        } else {
+                            val intent = Intent(context, FloatingService::class.java)
+                            context.startForegroundService(intent)
+                            Toast.makeText(context, if (isEnglish) "Service started" else "Servicio iniciado", Toast.LENGTH_SHORT).show()
                         }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    DemoniButton(
-                        text = "Solicitar Acceso Root",
-                        isSecondary = true,
-                        isDarkMode = isDarkMode,
-                        onClick = {
-                            scope.launch(Dispatchers.IO) {
-                                val hasRoot = ShellUtils.executeCommand("id")
-                                withContext(Dispatchers.Main) {
-                                    if (hasRoot) {
-                                        Toast.makeText(context, "Root obtenido!", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        Toast.makeText(context, "Fallo al obtener Root", Toast.LENGTH_SHORT).show()
-                                    }
+                    }
+                )
+                DemoniButton(
+                    text = if (isEnglish) "Request Root Access" else "Solicitar Acceso Root",
+                    isSecondary = true,
+                    onClick = {
+                        scope.launch(Dispatchers.IO) {
+                            val hasRoot = ShellUtils.executeCommand("id")
+                            withContext(Dispatchers.Main) {
+                                if (hasRoot) {
+                                    Toast.makeText(context, if (isEnglish) "Root obtained!" else "Root obtenido!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, if (isEnglish) "Root failed" else "Fallo al obtener Root", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
-                    )
-                }
+                    }
+                )
 
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                FadingSeparator(isDarkMode)
+                Spacer(modifier = Modifier.height(16.dp))
+                FadingSeparator()
 
                 GestureList(
                     gestures = gestures,
@@ -254,80 +292,115 @@ fun MainScreen(viewModel: GestureViewModel, isDarkMode: Boolean, onThemeToggle: 
 }
 
 @Composable
-fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false, isDarkMode: Boolean = true) {
-    val borderColor = if (isDarkMode) ShinySilver else AbyssBlack
+fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false) {
+    val containerColor = if (isSecondary) DeepBlood else HellRed
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(58.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSecondary) DeepBlood else HellRed
-        ),
-        shape = RoundedCornerShape(14.dp),
-        border = BorderStroke(2.dp, borderColor),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+            .height(52.dp)
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .shadow(
+                elevation = 16.dp, 
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color.Black, 
+                spotColor = Color.Black
+            )
+            .border(
+                width = 1.5.dp, 
+                color = Color.White.copy(alpha = if (isDark) 0.4f else 0.6f),
+                shape = RoundedCornerShape(12.dp)
+            ),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 10.dp,
+            pressedElevation = 2.dp
+        )
     ) {
-        Text(text, color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = 17.sp)
+        Text(
+            text = text, 
+            style = MaterialTheme.typography.titleMedium.copy(
+                shadow = Shadow(color = Color.Black.copy(alpha = 0.3f), offset = Offset(2f, 2f), blurRadius = 4f)
+            ),
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
 @Composable
-fun DrawerContent(isDarkMode: Boolean) {
+fun DrawerContent(isDarkMode: Boolean, isEnglish: Boolean, onLanguageToggle: () -> Unit) {
     val contentColor = if (isDarkMode) Color.White else AbyssBlack
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
-        StyledTitle(isDarkMode = isDarkMode, fontSize = 26, isCentered = true)
-        Spacer(modifier = Modifier.height(24.dp))
-        FadingSeparator(isDarkMode)
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+        StyledTitle(fontSize = 26, isCentered = true)
         
-        DrawerItem(label = "Ajustes", icon = Icons.Default.Menu, contentColor = contentColor)
-        DrawerItem(label = "Idiomas", icon = Icons.Default.Menu, contentColor = contentColor)
-        DrawerItem(label = "Importar", icon = Icons.Default.Upload, contentColor = contentColor)
-        DrawerItem(label = "Exportar", icon = Icons.Default.Download, contentColor = contentColor)
-        DrawerItem(label = "Ayuda", icon = Icons.Default.Menu, contentColor = contentColor)
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 32.dp),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+        )
+        
+        DrawerItem(label = if (isEnglish) "Settings" else "Ajustes", icon = Icons.Default.Settings, contentColor = contentColor)
+        Spacer(modifier = Modifier.height(16.dp))
+        DrawerItem(label = if (isEnglish) "Languages" else "Idiomas", icon = Icons.Default.Language, contentColor = contentColor, onClick = onLanguageToggle)
+        Spacer(modifier = Modifier.height(16.dp))
+        DrawerItem(label = if (isEnglish) "Import" else "Importar", icon = Icons.Default.Upload, contentColor = contentColor)
+        Spacer(modifier = Modifier.height(16.dp))
+        DrawerItem(label = if (isEnglish) "Export" else "Exportar", icon = Icons.Default.Download, contentColor = contentColor)
+        Spacer(modifier = Modifier.height(16.dp))
+        DrawerItem(label = if (isEnglish) "Help" else "Ayuda", icon = Icons.Default.Help, contentColor = contentColor)
         
         Spacer(modifier = Modifier.weight(1f))
         
-        Text(
-            "v1.0.1 - Edición Demoniaca",
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.bodySmall,
-            color = AshGrey
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            "Created by JAYLIZ with ❤️",
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            style = MaterialTheme.typography.bodySmall,
-            color = AshGrey
-        )
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp), 
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val footerColor = if (isDarkMode) AshGrey else Color.DarkGray
+            Text(
+                text = "DemoniDraw v1.0.1", 
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold, 
+                color = footerColor
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Created by JAYLIZ with ❤️", 
+                fontSize = 9.sp, 
+                color = footerColor.copy(0.7f),
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
 @Composable
-fun DrawerItem(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, contentColor: Color) {
+fun DrawerItem(label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, contentColor: Color, onClick: () -> Unit = {}) {
     Surface(
-        onClick = { /* TODO */ },
-        color = Color.Transparent,
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Obsidian),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .height(56.dp)
+            .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp))
+            .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(icon, contentDescription = null, tint = HellRed, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(16.dp))
-            Text(label, color = contentColor, fontSize = 16.sp)
+            Text(label, color = contentColor, style = MaterialTheme.typography.titleMedium)
         }
     }
 }
@@ -341,8 +414,7 @@ fun GestureList(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(bottom = 80.dp, top = 8.dp)
     ) {
         items(gestures) { gesture ->
             GestureItem(gesture, onDelete, onLongClick, isDarkMode)
@@ -357,22 +429,22 @@ fun GestureItem(
     onLongClick: (GestureEntry) -> Unit,
     isDarkMode: Boolean
 ) {
-    // Tarjeta más clara que el fondo en modo luz (Blanco sobre Plateado)
     val cardBg = if (isDarkMode) Obsidian else Color.White
     val textColor = if (isDarkMode) Color.White else AbyssBlack
     
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongClick(gesture) }
                 )
             },
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        border = BorderStroke(1.5.dp, if (isDarkMode) DeepBlood else HellRed), // Borde Rojo Demonio
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -384,12 +456,12 @@ fun GestureItem(
                 Text(
                     text = "Trigger: ${gesture.name}",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.titleMedium,
                     color = textColor
                 )
                 Text(
                     text = "Action: ${gesture.action}",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodySmall,
                     color = AshGrey
                 )
                 if (gesture.isShellCommand) {
@@ -401,11 +473,24 @@ fun GestureItem(
                     )
                 }
             }
+            
             IconButton(
                 onClick = { onDelete(gesture) },
-                colors = IconButtonDefaults.iconButtonColors(contentColor = HellRed)
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(40.dp)
+                    .border(
+                        width = 1.dp, 
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), 
+                        shape = CircleShape
+                    )
             ) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete")
+                Icon(
+                    imageVector = Icons.Default.Delete, 
+                    contentDescription = "Delete",
+                    tint = HellRed,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

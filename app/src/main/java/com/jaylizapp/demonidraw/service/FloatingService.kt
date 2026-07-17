@@ -113,9 +113,43 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
             }
         })
 
+        var initialY = 0
+        var initialTouchY = 0f
+        var clickCount = 0
+        var lastClickTime: Long = 0
+
         floatingTrigger.setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
-            true
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialY = params.y
+                    initialTouchY = event.rawY
+                    
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastClickTime < 500) {
+                        clickCount++
+                    } else {
+                        clickCount = 1
+                    }
+                    lastClickTime = currentTime
+                    
+                    if (clickCount >= 3) {
+                        Toast.makeText(this@FloatingService, "Servicio detenido", Toast.LENGTH_SHORT).show()
+                        stopSelf()
+                    }
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val deltaY = (event.rawY - initialTouchY).toInt()
+                    if (abs(deltaY) > 10) {
+                        params.y = initialY + deltaY
+                        windowManager.updateViewLayout(floatingTrigger, params)
+                    }
+                    true
+                }
+                else -> false
+            }
         }
 
         windowManager.addView(floatingTrigger, params)
