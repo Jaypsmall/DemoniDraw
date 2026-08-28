@@ -192,11 +192,17 @@ fun MainScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            context.contentResolver.openInputStream(it)?.bufferedReader()?.use { reader ->
-                val json = reader.readText()
-                viewModel.importGesturesFromJson(json)
+            try {
+                context.contentResolver.openInputStream(it)?.bufferedReader()?.use { reader ->
+                    val json = reader.readText()
+                    if (json.isNotEmpty()) {
+                        viewModel.importGesturesFromJson(json)
+                        Toast.makeText(context, if (isEnglish) "Import successful!" else "¡Importación exitosa!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            Toast.makeText(context, if (isEnglish) "Import successful!" else "¡Importación exitosa!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -219,7 +225,7 @@ fun MainScreen(
                         scope.launch { drawerState.close() }
                     },
                     onImportClick = {
-                        importLauncher.launch("application/json")
+                        importLauncher.launch("*/*") // Más permisivo con los archivos
                         scope.launch { drawerState.close() }
                     },
                     onExportClick = {
