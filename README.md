@@ -1,6 +1,6 @@
 # 😈 DemoniDraw (v1.0.2 - Demonic Edition)   ![Android](https://img.shields.io/badge/Android-181717?style=flat&logo=android&logoColor=yellow) ![Kotlin](https://img.shields.io/badge/kotlin-181717?style=flat&logo=kotlin&logoColor=yellow) 
 
-**DemoniDraw** is a powerful touch-gesture automation engine for rooted Android devices. Using an invisible, low-latency floating service, the app allows users to draw freehand strokes anywhere on the screen ("Visual Triggers") to instantly execute complex macros, console scripts, process controls, and low-level touch event injections.
+**DemoniDraw** Apk is a powerful touch-gesture automation engine for rooted Android devices. Using an invisible, low-latency floating service, the app allows users to draw freehand strokes anywhere on the screen ("Visual Triggers") to instantly execute complex macros, console scripts, process controls, and low-level touch event injections.
 
 **https://github.com/Jaypsmall/DemoniDraw/releases/download/root/DemoniDraw_v1.0.2.apk**
 
