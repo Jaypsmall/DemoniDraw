@@ -23,6 +23,7 @@ import androidx.core.app.NotificationCompat
 import com.jaylizapp.demonidraw.R
 import com.jaylizapp.demonidraw.data.AppDatabase
 import com.jaylizapp.demonidraw.util.GestureManager
+import com.jaylizapp.demonidraw.util.HybridEngine
 import com.jaylizapp.demonidraw.util.ShellUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -116,7 +117,8 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
         var initialY = 0
         var initialTouchY = 0f
         var clickCount = 0
-        var lastClickTime: Long = 0
+        var lastClickTime: Long
+        lastClickTime = 0
 
         floatingTrigger.setOnTouchListener { _, event ->
             gestureDetector.onTouchEvent(event)
@@ -227,27 +229,8 @@ class FloatingService : Service(), GestureOverlayView.OnGesturePerformedListener
             
             withContext(Dispatchers.Main) {
                 if (entry != null) {
-                    if (entry.isShellCommand) {
-                        serviceScope.launch(Dispatchers.IO) {
-                            val success = ShellUtils.executeCommand(entry.action)
-                            withContext(Dispatchers.Main) {
-                                if (!success) {
-                                    Toast.makeText(this@FloatingService, "Error ejecutando comando root", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                        Toast.makeText(this@FloatingService, "Ejecutando: $name", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Lanzar aplicación por nombre de paquete
-                        val launchIntent = packageManager.getLaunchIntentForPackage(entry.action.trim())
-                        if (launchIntent != null) {
-                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(launchIntent)
-                            Toast.makeText(this@FloatingService, "Abriendo: $name", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this@FloatingService, "No se pudo abrir la app: ${entry.action}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+                    Toast.makeText(this@FloatingService, "Ejecutando: $name", Toast.LENGTH_SHORT).show()
+                    HybridEngine.executeAction(this@FloatingService, entry.action, entry.isShellCommand)
                 }
             }
         }

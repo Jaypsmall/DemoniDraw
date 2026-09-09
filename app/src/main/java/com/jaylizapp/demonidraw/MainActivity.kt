@@ -1,35 +1,96 @@
 package com.jaylizapp.demonidraw
 
 import android.content.Intent
+import android.gesture.Gesture
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ChangeHistory
+import androidx.compose.material.icons.filled.CropSquare
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.ElectricBolt
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -50,12 +111,23 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.jaylizapp.demonidraw.data.GestureEntry
 import com.jaylizapp.demonidraw.service.FloatingService
-import com.jaylizapp.demonidraw.ui.theme.*
+import com.jaylizapp.demonidraw.ui.theme.AbyssBlack
+import com.jaylizapp.demonidraw.ui.theme.AshGrey
+import com.jaylizapp.demonidraw.ui.theme.BrimstoneYellow
+import com.jaylizapp.demonidraw.ui.theme.DeepBlood
+import com.jaylizapp.demonidraw.ui.theme.DemonidrawTheme
+import com.jaylizapp.demonidraw.ui.theme.HellRed
+import com.jaylizapp.demonidraw.ui.theme.Obsidian
+import com.jaylizapp.demonidraw.ui.theme.SoulWhite
+import com.jaylizapp.demonidraw.util.GestureManager
+import com.jaylizapp.demonidraw.util.ShapeUtils
 import com.jaylizapp.demonidraw.util.ShellUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.items as lazyItems
 
 class MainActivity : ComponentActivity() {
     private val viewModel: GestureViewModel by viewModels()
@@ -214,7 +286,7 @@ fun MainScreen(
                 drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
                 modifier = Modifier
                     .width(300.dp)
-                    .statusBarsPadding() // Empieza debajo de la barra de estado
+                    .statusBarsPadding()
             ) {
                 DrawerContent(
                     isDarkMode = isDarkMode, 
@@ -225,7 +297,7 @@ fun MainScreen(
                         scope.launch { drawerState.close() }
                     },
                     onImportClick = {
-                        importLauncher.launch("*/*") // Más permisivo con los archivos
+                        importLauncher.launch("*/*")
                         scope.launch { drawerState.close() }
                     },
                     onExportClick = {
@@ -335,15 +407,23 @@ fun MainScreen(
             if (showAddDialog) {
                 AddGestureDialog(
                     onDismiss = { showAddDialog = false },
-                    onConfirm = { name, action, isShell ->
+                    onConfirm = { name, action, isShell, predefinedGesture ->
                         viewModel.addGesture(name, action, isShell)
                         showAddDialog = false
-                        val intent = Intent(context, AddGestureActivity::class.java).apply {
-                            putExtra("GESTURE_NAME", name)
+                        
+                        if (predefinedGesture != null) {
+                            val gestureManager = GestureManager(context)
+                            gestureManager.addGesture(name, predefinedGesture)
+                            Toast.makeText(context, if (isEnglish) "Gesture pre-configured!" else "Gesto pre-configurado!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            val intent = Intent(context, AddGestureActivity::class.java).apply {
+                                putExtra("GESTURE_NAME", name)
+                            }
+                            context.startActivity(intent)
                         }
-                        context.startActivity(intent)
                     },
-                    isDarkMode = isDarkMode
+                    isDarkMode = isDarkMode,
+                    isEnglish = isEnglish
                 )
             }
 
@@ -377,7 +457,7 @@ fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false
 
     Button(
         onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 4.dp), // Padding interno mínimo
+        contentPadding = PaddingValues(horizontal = 4.dp),
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
@@ -403,12 +483,12 @@ fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false
         Text(
             text = text, 
             style = MaterialTheme.typography.titleMedium.copy(
-                fontSize = 15.sp, // Un pelín más pequeño para que no corte
+                fontSize = 15.sp, 
                 shadow = Shadow(color = Color.Black.copy(alpha = 0.3f), offset = Offset(2f, 2f), blurRadius = 4f)
             ),
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            maxLines = 1 // Evita que salte de línea y se corte verticalmente
+            maxLines = 1 
         )
     }
 }
@@ -520,7 +600,7 @@ fun GestureList(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 80.dp, top = 8.dp)
     ) {
-        items(gestures) { gesture ->
+        lazyItems(gestures) { gesture ->
             GestureItem(gesture, onDelete, onLongClick, isDarkMode)
         }
     }
@@ -650,7 +730,7 @@ fun StorageDialog(onDismiss: () -> Unit, isEnglish: Boolean, viewModel: GestureV
                     Text(if (isEnglish) "No backups found." else "No se encontraron respaldos.", color = AshGrey)
                 } else {
                     LazyColumn(modifier = Modifier.heightIn(max = 250.dp)) {
-                        items(files) { file ->
+                        lazyItems(files) { file ->
                             Row(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -677,20 +757,53 @@ fun StorageDialog(onDismiss: () -> Unit, isEnglish: Boolean, viewModel: GestureV
 }
 
 @Composable
-fun AddGestureDialog(onDismiss: () -> Unit, onConfirm: (String, String, Boolean) -> Unit, isDarkMode: Boolean) {
+fun AddGestureDialog(onDismiss: () -> Unit, onConfirm: (String, String, Boolean, Gesture?) -> Unit, isDarkMode: Boolean, isEnglish: Boolean) {
     var name by remember { mutableStateOf("") }
     var action by remember { mutableStateOf("") }
     var isShell by remember { mutableStateOf(false) }
+    var selectedPredefinedGesture by remember { mutableStateOf<Gesture?>(null) }
     
     val dialogBg = if (isDarkMode) Obsidian else Color.White
     val textColor = if (isDarkMode) Color.White else AbyssBlack
 
+    val predefinedShapes = listOf(
+        Triple(Icons.Default.CropSquare, "Square", ShapeUtils.createSquare()),
+        Triple(Icons.Default.RadioButtonUnchecked, "Circle", ShapeUtils.createCircle()),
+        Triple(Icons.Default.ChangeHistory, "Triangle", ShapeUtils.createTriangle()),
+        Triple(Icons.Default.Done, "V-Shape", ShapeUtils.createVShape()),
+        Triple(Icons.Default.ElectricBolt, "Z-Shape", ShapeUtils.createZShape())
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = dialogBg,
-        title = { Text("Add Gesture Entry", color = textColor) },
+        title = { Text(if (isEnglish) "Add Gesture Entry" else "Añadir Entrada de Gesto", color = textColor) },
         text = {
             Column {
+                Text(if (isEnglish) "Select a shape (Optional):" else "Selecciona una figura (Opcional):", color = textColor, style = MaterialTheme.typography.labelMedium)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),
+                    modifier = Modifier.fillMaxWidth().height(60.dp)
+                ) {
+                    gridItems(predefinedShapes) { (icon, shapeName, gesture) ->
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(4.dp)
+                                .background(if (selectedPredefinedGesture == gesture) HellRed.copy(0.3f) else HellRed.copy(0.1f), CircleShape)
+                                .clickable { 
+                                    selectedPredefinedGesture = gesture
+                                    if (name.isEmpty()) name = shapeName
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(icon, null, tint = HellRed, modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+
                 TextField(
                     value = name,
                     onValueChange = { name = it },
@@ -720,22 +833,22 @@ fun AddGestureDialog(onDismiss: () -> Unit, onConfirm: (String, String, Boolean)
                         onCheckedChange = { isShell = it },
                         colors = CheckboxDefaults.colors(checkedColor = HellRed)
                     )
-                    Text("¿Es comando ROOT/Shell?", color = textColor)
+                    Text(if (isEnglish) "Is ROOT/Shell command?" else "¿Es comando ROOT/Shell?", color = textColor)
                 }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(name, action, isShell) },
+                onClick = { onConfirm(name, action, isShell, selectedPredefinedGesture) },
                 colors = ButtonDefaults.buttonColors(containerColor = HellRed),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Confirm", color = Color.White)
+                Text(if (isEnglish) "Confirm" else "Confirmar", color = Color.White)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = textColor)
+                Text(if (isEnglish) "Cancel" else "Cancelar", color = textColor)
             }
         }
     )
