@@ -542,7 +542,7 @@ fun DrawerContent(
         ) {
             val footerColor = if (isDarkMode) AshGrey else Color.DarkGray
             Text(
-                text = "DemoniDraw v1.0.2",
+                text = "DemoniDraw v1.0.3",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold, 
                 color = footerColor
