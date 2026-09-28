@@ -1,10 +1,8 @@
 /* =====================================================
    DEMONIDRAW WEBSITE
-   Global Theme
 ===================================================== */
 
 :root {
-
   --bg: #070707;
   --bg-secondary: #0d0d0d;
 
@@ -24,6 +22,8 @@
   --shadow: rgba(0, 0, 0, 0.55);
 
   --button-text: #ffffff;
+
+  --navbar-height: 68px;
 }
 
 
@@ -32,7 +32,6 @@
 ===================================================== */
 
 body.light {
-
   --bg: #d1d5d8;
   --bg-secondary: #ffffff;
 
@@ -59,25 +58,17 @@ body.light {
 
 * {
   box-sizing: border-box;
-
   margin: 0;
   padding: 0;
 }
 
-
 html {
-
   scroll-behavior: smooth;
-
-  /*
-   * Prevent fixed navbar from covering
-   * section titles when using #anchors.
-   */
-  scroll-padding-top: 90px;
+  scroll-padding-top: calc(var(--navbar-height) + 20px);
 }
 
-
 body {
+  min-width: 320px;
 
   font-family:
     Inter,
@@ -89,89 +80,84 @@ body {
     sans-serif;
 
   background: var(--bg);
-
   color: var(--text);
 
   line-height: 1.6;
+
+  overflow-x: hidden;
 
   transition:
     background 0.35s ease,
     color 0.35s ease;
 }
 
-
 a {
-
   color: inherit;
-
   text-decoration: none;
 }
 
-
 button {
-
   font-family: inherit;
 }
 
 
+/* =====================================================
+   CONTAINER
+===================================================== */
+
 .container {
-
   width: min(1100px, 92%);
-
   margin-left: auto;
   margin-right: auto;
 }
 
 
 /* =====================================================
-   FIXED NAVBAR
+   NAVBAR
 ===================================================== */
 
 .navbar {
-
   position: fixed;
 
   top: 0;
   left: 0;
+  right: 0;
 
   width: 100%;
+  height: var(--navbar-height);
 
-  z-index: 1000;
+  z-index: 10000;
 
-  background:
-    rgba(7, 7, 7, 0.88);
+  background: rgba(7, 7, 7, 0.90);
 
-  border-bottom:
-    1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
   transition:
     background 0.35s ease,
     border-color 0.35s ease;
 }
 
-
 body.light .navbar {
-
-  background:
-    rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.92);
 }
 
 
-.nav-container {
+/* =====================================================
+   NAV CONTAINER
+===================================================== */
 
+.nav-container {
   width: min(1200px, 94%);
 
-  min-height: 68px;
+  height: 100%;
 
   margin: 0 auto;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   gap: 20px;
@@ -183,9 +169,7 @@ body.light .navbar {
 ===================================================== */
 
 .nav-brand {
-
   display: flex;
-
   align-items: center;
 
   gap: 9px;
@@ -195,10 +179,10 @@ body.light .navbar {
   font-weight: 900;
 }
 
-
 .nav-brand-icon {
-
   font-size: 25px;
+
+  line-height: 1;
 
   filter:
     drop-shadow(
@@ -206,39 +190,27 @@ body.light .navbar {
     );
 }
 
-
 .nav-brand-text {
-
   font-size: 20px;
+
+  line-height: 1;
 
   letter-spacing: -0.8px;
 }
 
-
-/* =====================================================
-   NAV BRAND COLORS
-===================================================== */
-
 .nav-brand .de {
-
   color: #ff2020;
 }
 
-
 .nav-brand .moni {
-
   color: #f0ca00;
 }
 
-
 .nav-brand .draw {
-
   color: #ffffff;
 }
 
-
 body.light .nav-brand .draw {
-
   color: #111111;
 }
 
@@ -248,25 +220,20 @@ body.light .nav-brand .draw {
 ===================================================== */
 
 .nav-links {
-
   display: flex;
-
   align-items: center;
-
   justify-content: flex-end;
 
-  gap: 5px;
+  gap: 4px;
+
+  min-width: 0;
 }
 
-
 .nav-link {
-
   position: relative;
 
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 6px;
@@ -275,9 +242,7 @@ body.light .nav-brand .draw {
 
   padding: 8px 12px;
 
-  border:
-    1px solid transparent;
-
+  border: 1px solid transparent;
   border-radius: 8px;
 
   background: transparent;
@@ -285,10 +250,11 @@ body.light .nav-brand .draw {
   color: var(--text-secondary);
 
   font-size: 11px;
-
   font-weight: 800;
 
   letter-spacing: 0.8px;
+
+  white-space: nowrap;
 
   cursor: pointer;
 
@@ -298,9 +264,7 @@ body.light .nav-brand .draw {
     border-color 0.2s ease;
 }
 
-
 .nav-link:hover {
-
   color: var(--text);
 
   background: var(--card);
@@ -309,25 +273,24 @@ body.light .nav-brand .draw {
 }
 
 
-/* Underline */
+/* =====================================================
+   NAV UNDERLINE
+===================================================== */
 
 .nav-link::after {
-
   content: "";
 
   position: absolute;
 
-  bottom: 2px;
-
   left: 12px;
   right: 12px;
+  bottom: 2px;
 
   height: 2px;
 
   background: var(--accent);
 
-  transform:
-    scaleX(0);
+  transform: scaleX(0);
 
   transform-origin: center;
 
@@ -335,59 +298,55 @@ body.light .nav-brand .draw {
     transform 0.2s ease;
 }
 
-
 .nav-link:hover::after {
-
-  transform:
-    scaleX(1);
+  transform: scaleX(1);
 }
 
 
 /* =====================================================
-   DEMONI APPS DROPDOWN
+   DEMONI APPS MENU
 ===================================================== */
 
 .apps-menu {
-
   position: relative;
+
+  flex-shrink: 0;
 }
 
-
 .apps-button {
-
   appearance: none;
-
   -webkit-appearance: none;
 }
 
 
+/* =====================================================
+   DROPDOWN ARROW
+===================================================== */
+
 .dropdown-arrow {
+  display: inline-block;
 
   font-size: 8px;
+
+  line-height: 1;
 
   transition:
     transform 0.25s ease;
 }
 
-
-.apps-button[aria-expanded="true"]
-.dropdown-arrow {
-
-  transform:
-    rotate(180deg);
+.apps-button[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
 }
 
 
 /* =====================================================
-   DROPDOWN PANEL
+   DROPDOWN
 ===================================================== */
 
 .apps-dropdown {
-
   position: absolute;
 
   top: calc(100% + 9px);
-
   right: 0;
 
   width: 245px;
@@ -396,17 +355,16 @@ body.light .nav-brand .draw {
 
   background: var(--card);
 
-  border:
-    1px solid var(--border);
-
+  border: 1px solid var(--border);
   border-radius: 13px;
 
   box-shadow:
     0 18px 45px var(--shadow);
 
   opacity: 0;
-
   visibility: hidden;
+
+  pointer-events: none;
 
   transform:
     translateY(-8px)
@@ -421,12 +379,12 @@ body.light .nav-brand .draw {
     transform 0.2s ease;
 }
 
-
 .apps-dropdown.open {
-
   opacity: 1;
 
   visibility: visible;
+
+  pointer-events: auto;
 
   transform:
     translateY(0)
@@ -439,18 +397,14 @@ body.light .nav-brand .draw {
 ===================================================== */
 
 .app-item {
-
   display: flex;
-
   align-items: center;
 
   gap: 11px;
 
   padding: 11px;
 
-  border:
-    1px solid transparent;
-
+  border: 1px solid transparent;
   border-radius: 9px;
 
   transition:
@@ -459,25 +413,19 @@ body.light .nav-brand .draw {
     transform 0.2s ease;
 }
 
-
 .app-item:hover {
-
   background: var(--card-hover);
 
   border-color: var(--border);
 
-  transform:
-    translateX(3px);
+  transform: translateX(3px);
 }
 
-
 .app-icon {
-
   width: 36px;
   height: 36px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
@@ -485,43 +433,41 @@ body.light .nav-brand .draw {
 
   border-radius: 9px;
 
-  background:
-    var(--bg-secondary);
+  background: var(--bg-secondary);
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   font-size: 19px;
+
+  line-height: 1;
 }
 
-
 .app-info {
-
   display: flex;
-
   flex-direction: column;
-
   align-items: flex-start;
 
   line-height: 1.2;
+
+  min-width: 0;
 }
 
-
 .app-info strong {
-
   color: var(--text);
 
   font-size: 14px;
+
+  white-space: nowrap;
 }
 
-
 .app-info small {
-
   margin-top: 3px;
 
   color: var(--text-secondary);
 
   font-size: 11px;
+
+  white-space: nowrap;
 }
 
 
@@ -530,14 +476,11 @@ body.light .nav-brand .draw {
 ===================================================== */
 
 .current-app {
-
   border-color:
-    rgba(255, 32, 32, 0.25);
+    rgba(255, 32, 32, 0.30);
 }
 
-
 .current-app .app-info strong {
-
   color: var(--accent);
 }
 
@@ -547,31 +490,28 @@ body.light .nav-brand .draw {
 ===================================================== */
 
 .theme-button {
-
   width: 42px;
   height: 42px;
 
   flex-shrink: 0;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   border-radius: 50%;
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
-  background:
-    var(--card);
+  background: var(--card);
 
-  color:
-    var(--text);
+  color: var(--text);
 
   cursor: pointer;
 
   font-size: 18px;
 
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
+  line-height: 1;
 
   box-shadow:
     0 8px 30px var(--shadow);
@@ -583,11 +523,8 @@ body.light .nav-brand .draw {
     border-color 0.35s ease;
 }
 
-
 .theme-button:hover {
-
-  transform:
-    scale(1.08);
+  transform: scale(1.08);
 }
 
 
@@ -596,18 +533,12 @@ body.light .nav-brand .draw {
 ===================================================== */
 
 header {
-
   min-height: 90vh;
 
-  /*
-   * Space for fixed navbar.
-   */
-  padding-top: 68px;
+  padding-top: var(--navbar-height);
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   text-align: center;
@@ -624,18 +555,24 @@ header {
     );
 }
 
-
 .hero {
-
   max-width: 650px;
+
+  padding-top: 20px;
+  padding-bottom: 30px;
 }
 
 
-.logo-icon {
+/* =====================================================
+   HERO ICON
+===================================================== */
 
+.logo-icon {
   font-size: 78px;
 
-  margin-bottom: 8px;
+  line-height: 1;
+
+  margin-bottom: 12px;
 
   filter:
     drop-shadow(
@@ -649,7 +586,6 @@ header {
 ===================================================== */
 
 .logo-title {
-
   font-size:
     clamp(42px, 8vw, 78px);
 
@@ -662,33 +598,21 @@ header {
   margin-bottom: 18px;
 }
 
-
-/* De = RED */
-
 .logo-title .de {
-
   color: #ff2020;
 
   text-shadow:
     0 0 18px rgba(255, 32, 32, 0.55);
 }
 
-
-/* moni = YELLOW */
-
 .logo-title .moni {
-
   color: #f0ca00;
 
   text-shadow:
     0 0 18px rgba(255, 214, 0, 0.33);
 }
 
-
-/* Draw = WHITE */
-
 .logo-title .draw {
-
   color: #ffffff;
 
   text-shadow:
@@ -699,11 +623,7 @@ header {
     text-shadow 0.35s ease;
 }
 
-
-/* Draw = BLACK in light mode */
-
 body.light .logo-title .draw {
-
   color: #111111;
 
   text-shadow: none;
@@ -711,11 +631,10 @@ body.light .logo-title .draw {
 
 
 /* =====================================================
-   EDITION TAG
+   EDITION
 ===================================================== */
 
 .edition {
-
   display: inline-block;
 
   color: var(--text);
@@ -734,13 +653,11 @@ body.light .logo-title .draw {
 
 
 /* =====================================================
-   HERO DESCRIPTION
+   HERO TEXT
 ===================================================== */
 
 .hero p {
-
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 
   font-size:
     clamp(17px, 2.5vw, 21px);
@@ -757,7 +674,6 @@ body.light .logo-title .draw {
 ===================================================== */
 
 .buttons {
-
   margin-top: 25px;
 
   display: flex;
@@ -769,13 +685,9 @@ body.light .logo-title .draw {
   flex-wrap: wrap;
 }
 
-
 .button {
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
 
   padding: 13px 25px;
@@ -784,8 +696,7 @@ body.light .logo-title .draw {
 
   font-weight: 800;
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   transition:
     transform 0.2s ease,
@@ -793,41 +704,26 @@ body.light .logo-title .draw {
     border-color 0.3s ease;
 }
 
-
 .button:hover {
-
-  transform:
-    translateY(-2px);
+  transform: translateY(-2px);
 }
-
 
 .primary {
+  background: var(--accent);
 
-  background:
-    var(--accent);
+  color: var(--button-text);
 
-  color:
-    var(--button-text);
-
-  border-color:
-    var(--accent);
+  border-color: var(--accent);
 }
-
 
 .primary:hover {
-
-  background:
-    var(--accent-hover);
+  background: var(--accent-hover);
 }
 
-
 .secondary {
+  background: var(--card);
 
-  background:
-    var(--card);
-
-  color:
-    var(--text);
+  color: var(--text);
 }
 
 
@@ -836,13 +732,10 @@ body.light .logo-title .draw {
 ===================================================== */
 
 section {
-
-  padding: 30px 0;
+  padding: 55px 0;
 }
 
-
 .section-title {
-
   text-align: center;
 
   font-size: 34px;
@@ -850,11 +743,8 @@ section {
   margin-bottom: 35px;
 }
 
-
 .section-title span {
-
-  color:
-    var(--accent);
+  color: var(--accent);
 }
 
 
@@ -863,7 +753,6 @@ section {
 ===================================================== */
 
 .screenshots {
-
   display: grid;
 
   grid-template-columns:
@@ -872,14 +761,12 @@ section {
   gap: 28px;
 }
 
-
 .screenshot-card {
+  min-width: 0;
 
-  background:
-    var(--card);
+  background: var(--card);
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   border-radius: 18px;
 
@@ -894,26 +781,18 @@ section {
     transform 0.25s ease;
 }
 
-
 .screenshot-card:hover {
-
-  transform:
-    translateY(-5px);
+  transform: translateY(-5px);
 }
 
-
 .screenshot-card img {
-
   display: block;
 
   width: 100%;
-
+  max-width: 100%;
   height: auto;
 
   border-radius: 11px;
-
-  transition:
-    opacity 0.2s ease;
 }
 
 
@@ -922,7 +801,6 @@ section {
 ===================================================== */
 
 .features {
-
   display: grid;
 
   grid-template-columns:
@@ -931,14 +809,12 @@ section {
   gap: 20px;
 }
 
-
 .feature {
+  min-width: 0;
 
-  background:
-    var(--card);
+  background: var(--card);
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   border-radius: 15px;
 
@@ -950,32 +826,22 @@ section {
     transform 0.25s ease;
 }
 
-
 .feature:hover {
-
-  transform:
-    translateY(-4px);
+  transform: translateY(-4px);
 }
 
-
 .feature-icon {
-
   font-size: 28px;
 
   margin-bottom: 10px;
 }
 
-
 .feature h3 {
-
   margin-bottom: 8px;
 }
 
-
 .feature p {
-
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 }
 
 
@@ -984,24 +850,17 @@ section {
 ===================================================== */
 
 .requirements {
+  background: var(--bg-secondary);
 
-  background:
-    var(--bg-secondary);
-
-  border-top:
-    1px solid var(--border);
-
-  border-bottom:
-    1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 
   transition:
     background 0.35s ease,
     border-color 0.35s ease;
 }
 
-
 .requirements-box {
-
   display: grid;
 
   grid-template-columns:
@@ -1010,18 +869,16 @@ section {
   gap: 20px;
 }
 
-
 .requirement {
+  min-width: 0;
 
   text-align: center;
 
   padding: 25px;
 
-  background:
-    var(--card);
+  background: var(--card);
 
-  border:
-    1px solid var(--border);
+  border: 1px solid var(--border);
 
   border-radius: 15px;
 
@@ -1030,25 +887,18 @@ section {
     border-color 0.35s ease;
 }
 
-
 .requirement-icon {
-
   font-size: 28px;
 }
 
-
 .requirement strong {
-
   display: block;
 
   margin-top: 8px;
 }
 
-
 .requirement p {
-
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 
   font-size: 14px;
 }
@@ -1059,18 +909,14 @@ section {
 ===================================================== */
 
 footer {
-
-  padding: 30px 0;
+  padding: 35px 0;
 
   text-align: center;
 
-  color:
-    var(--text-secondary);
+  color: var(--text-secondary);
 }
 
-
 .footer-logo {
-
   font-size: 28px;
 
   font-weight: 900;
@@ -1078,76 +924,60 @@ footer {
   margin-bottom: 8px;
 }
 
-
 .footer-logo .de {
-
   color: #ff2020;
 }
 
-
 .footer-logo .moni {
-
   color: #f0ca00;
 }
 
-
 .footer-logo .draw {
-
   color: #ffffff;
 }
 
-
 body.light .footer-logo .draw {
-
   color: #111111;
 }
 
-
 .version {
-
-  color:
-    var(--accent);
+  color: var(--accent);
 
   font-weight: 800;
 
   margin-bottom: 12px;
 }
 
-
 footer p {
-
   margin-top: 5px;
 }
 
 
 /* =====================================================
-   TABLET / MOBILE
+   TABLET
 ===================================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
 
-  .nav-container {
-
-    min-height: 62px;
-
-    width: 94%;
+  :root {
+    --navbar-height: 62px;
   }
 
+  .nav-container {
+    width: 96%;
+
+    gap: 8px;
+  }
 
   .nav-brand-text {
-
     display: none;
   }
 
-
   .nav-links {
-
     gap: 2px;
   }
 
-
   .nav-link {
-
     min-height: 38px;
 
     padding:
@@ -1158,125 +988,95 @@ footer p {
     letter-spacing: 0.4px;
   }
 
-
   .theme-button {
-
     width: 38px;
     height: 38px;
 
     font-size: 16px;
   }
 
-
   .apps-dropdown {
-
-    right: 0;
-
     width: 230px;
   }
 
-
   header {
-
-    padding-top: 62px;
+    padding-top: var(--navbar-height);
   }
 
-
   .screenshots,
-  .features,
-  .requirements-box {
-
+  .features {
     grid-template-columns: 1fr;
   }
 
+  .requirements-box {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
 
   .logo-icon {
-
     font-size: 60px;
   }
 
-
   .logo-title {
-
     font-size:
       clamp(40px, 13vw, 62px);
 
     letter-spacing: -2px;
   }
-
-
-  section {
-
-    padding: 45px 0;
-  }
-
-
-  .section-title {
-
-    font-size: 29px;
-  }
 }
 
 
 /* =====================================================
-   SMALL MOBILE
+   MOBILE
 ===================================================== */
 
-@media (max-width: 560px) {
+@media (max-width: 650px) {
 
   .nav-container {
+    width: 100%;
 
-    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 
-
   .nav-brand {
-
     display: none;
   }
 
-
   .nav-links {
-
     width: 100%;
 
     justify-content: center;
-  }
 
+    gap: 2px;
+  }
 
   .nav-link {
-
     padding:
-      6px 5px;
+      6px 6px;
 
     font-size: 8px;
+
+    letter-spacing: 0.25px;
   }
 
-
   .apps-button {
-
     padding-left: 7px;
     padding-right: 7px;
   }
 
-
   .theme-button {
-
     width: 36px;
     height: 36px;
+
+    font-size: 15px;
   }
 
-
-  /*
-   * Fixed dropdown on very small screens
-   * so it never gets clipped.
-   */
-
   .apps-dropdown {
-
     position: fixed;
 
-    top: 57px;
+    top:
+      calc(var(--navbar-height) + 7px);
 
     right: 8px;
 
@@ -1284,17 +1084,52 @@ footer p {
       min(250px, calc(100vw - 16px));
   }
 
-
   .buttons {
-
     flex-direction: column;
 
     align-items: stretch;
   }
 
-
   .button {
-
     width: 100%;
+  }
+
+  section {
+    padding: 45px 0;
+  }
+
+  .section-title {
+    font-size: 29px;
+  }
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
+
+  .nav-link {
+    padding:
+      6px 4px;
+
+    font-size: 7px;
+  }
+
+  .apps-button {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .dropdown-arrow {
+    font-size: 7px;
+  }
+
+  .theme-button {
+    width: 34px;
+    height: 34px;
+
+    font-size: 14px;
   }
 }
