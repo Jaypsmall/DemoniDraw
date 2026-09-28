@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>DemoniDraw | Demonic Edition</title>
 
@@ -11,23 +16,215 @@
     content="DemoniDraw v1.0.3 - Touch gesture automation engine for rooted Android devices."
   >
 
+  <meta
+    name="theme-color"
+    content="#070707"
+  >
+
+  <meta
+    property="og:title"
+    content="DemoniDraw | Demonic Edition"
+  >
+
+  <meta
+    property="og:description"
+    content="Touch gesture automation engine for rooted Android devices."
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
   <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
   <!-- =========================
-       THEME BUTTON
+       NAVIGATION
   ========================== -->
 
-  <nav>
-    <button
-      id="themeButton"
-      class="theme-button"
-      aria-label="Change theme">
-      ☀️
-    </button>
+  <nav class="navbar">
+
+    <div class="nav-container">
+
+
+      <!-- BRAND -->
+
+      <a href="#" class="nav-brand">
+
+        <span class="nav-brand-icon">😈</span>
+
+        <span class="nav-brand-text">
+
+          <span class="de">De</span><span class="moni">moni</span><span class="draw">Draw</span>
+
+        </span>
+
+      </a>
+
+
+      <!-- NAVIGATION LINKS -->
+
+      <div class="nav-links">
+
+
+        <a
+          href="#interface"
+          class="nav-link">
+
+          INTERFACE
+
+        </a>
+
+
+        <a
+          href="#features"
+          class="nav-link">
+
+          FEATURES
+
+        </a>
+
+
+        <a
+          href="#requirements"
+          class="nav-link">
+
+          REQUIREMENTS
+
+        </a>
+
+
+        <!-- DEMONI APPS -->
+
+        <div class="apps-menu">
+
+
+          <button
+            class="nav-link apps-button"
+            id="appsButton"
+            type="button"
+            aria-expanded="false"
+            aria-haspopup="true">
+
+            DEMONI APPS
+
+            <span class="dropdown-arrow">
+              ▼
+            </span>
+
+          </button>
+
+
+          <div
+            class="apps-dropdown"
+            id="appsDropdown">
+
+
+            <!-- DEMONITALK -->
+
+            <a
+              href="https://jaypsmall.github.io/DemoniTalk/"
+              class="app-item">
+
+              <span class="app-icon">
+                😈
+              </span>
+
+              <span class="app-info">
+
+                <strong>
+                  DemoniTalk
+                </strong>
+
+                <small>
+                  Voice automation
+                </small>
+
+              </span>
+
+            </a>
+
+
+            <!-- DEMONIDRAW -->
+
+            <a
+              href="https://jaypsmall.github.io/DemoniDraw/"
+              class="app-item current-app">
+
+              <span class="app-icon">
+                🎨
+              </span>
+
+              <span class="app-info">
+
+                <strong>
+                  DemoniDraw
+                </strong>
+
+                <small>
+                  Current app
+                </small>
+
+              </span>
+
+            </a>
+
+
+            <!-- DEMONIWIFI -->
+
+            <a
+              href="https://jaypsmall.github.io/DemoniWifi/"
+              class="app-item">
+
+              <span class="app-icon">
+                📡
+              </span>
+
+              <span class="app-info">
+
+                <strong>
+                  DemoniWifi
+                </strong>
+
+                <small>
+                  WiFi utilities
+                </small>
+
+              </span>
+
+            </a>
+
+
+          </div>
+
+        </div>
+
+
+        <!-- THEME -->
+
+        <button
+          id="themeButton"
+          class="theme-button"
+          aria-label="Change theme"
+          aria-pressed="false">
+
+          ☀️
+
+        </button>
+
+
+      </div>
+
+    </div>
+
   </nav>
+
 
 
   <!-- =========================
@@ -38,43 +235,64 @@
 
     <div class="hero container">
 
-      <div class="logo-icon">😈</div>
 
-      <h1 class="logo-title">
-        <span class="de">De</span><span class="moni">moni</span><span class="draw">Draw</span>
-      </h1>
-
-      <div class="edition">
-        DEMONIC EDITION · v1.0.3
+      <div class="logo-icon">
+        😈
       </div>
 
+
+      <h1 class="logo-title">
+
+        <span class="de">De</span><span class="moni">moni</span><span class="draw">Draw</span>
+
+      </h1>
+
+
+      <div class="edition">
+
+        DEMONIC EDITION · v1.0.3
+
+      </div>
+
+
       <p>
+
         Touch-gesture automation engine for rooted Android devices.
         Draw custom gestures anywhere on the screen and turn them
         into programmable actions.
+
       </p>
 
+
       <div class="buttons">
+
 
         <a
           class="button primary"
           href="https://github.com/Jaypsmall/DemoniDraw/releases/download/root/DemoniDraw_v1.0.3.apk">
+
           ↓ DOWNLOAD APK
+
         </a>
+
 
         <a
           class="button secondary"
           href="https://github.com/Jaypsmall/DemoniDraw"
           target="_blank"
           rel="noopener">
+
           VIEW SOURCE
+
         </a>
+
 
       </div>
 
     </div>
 
   </header>
+
 
 
   <!-- =========================
@@ -85,25 +303,36 @@
 
     <div class="container">
 
+
       <h2 class="section-title">
+
         📱 <span>Interface</span>
+
       </h2>
+
 
       <div class="screenshots">
 
+
         <div class="screenshot-card">
+
           <img
             id="screen1"
             src="https://github.com/user-attachments/assets/b4b5169a-c6fb-404f-9294-74418d9e534f"
             alt="DemoniDraw gesture automation interface">
+
         </div>
 
+
         <div class="screenshot-card">
+
           <img
             id="screen2"
             src="https://github.com/user-attachments/assets/71374956-2f3a-4f65-9632-699d76a3a4ef"
             alt="DemoniDraw macro configuration interface">
+
         </div>
+
 
       </div>
 
@@ -112,25 +341,35 @@
   </section>
 
 
+
   <!-- =========================
        FEATURES
   ========================== -->
 
-  <section>
+  <section id="features">
 
     <div class="container">
 
+
       <h2 class="section-title">
+
         ⚡ <span>Features</span>
+
       </h2>
+
 
       <div class="features">
 
+
         <div class="feature">
 
-          <div class="feature-icon">🎨</div>
+          <div class="feature-icon">
+            🎨
+          </div>
 
-          <h3>Visual Triggers</h3>
+          <h3>
+            Visual Triggers
+          </h3>
 
           <p>
             Draw freehand strokes, letters, shapes and curves
@@ -142,9 +381,13 @@
 
         <div class="feature">
 
-          <div class="feature-icon">⚡</div>
+          <div class="feature-icon">
+            ⚡
+          </div>
 
-          <h3>Root Automation</h3>
+          <h3>
+            Root Automation
+          </h3>
 
           <p>
             Execute system-level commands and automation sequences
@@ -156,9 +399,13 @@
 
         <div class="feature">
 
-          <div class="feature-icon">👆</div>
+          <div class="feature-icon">
+            👆
+          </div>
 
-          <h3>Touch Injection</h3>
+          <h3>
+            Touch Injection
+          </h3>
 
           <p>
             Automate taps, swipes and coordinate-based interactions
@@ -170,9 +417,13 @@
 
         <div class="feature">
 
-          <div class="feature-icon">🔗</div>
+          <div class="feature-icon">
+            🔗
+          </div>
 
-          <h3>Macro Chains</h3>
+          <h3>
+            Macro Chains
+          </h3>
 
           <p>
             Combine multiple actions into programmable sequences
@@ -184,9 +435,13 @@
 
         <div class="feature">
 
-          <div class="feature-icon">🪟</div>
+          <div class="feature-icon">
+            🪟
+          </div>
 
-          <h3>Floating Overlay</h3>
+          <h3>
+            Floating Overlay
+          </h3>
 
           <p>
             A lightweight floating service works above other
@@ -198,9 +453,13 @@
 
         <div class="feature">
 
-          <div class="feature-icon">🚀</div>
+          <div class="feature-icon">
+            🚀
+          </div>
 
-          <h3>Low-Latency Engine</h3>
+          <h3>
+            Low-Latency Engine
+          </h3>
 
           <p>
             Lightweight gesture recognition designed for fast
@@ -209,6 +468,7 @@
 
         </div>
 
+
       </div>
 
     </div>
@@ -216,25 +476,37 @@
   </section>
 
 
+
   <!-- =========================
        REQUIREMENTS
   ========================== -->
 
-  <section class="requirements">
+  <section
+    id="requirements"
+    class="requirements">
 
     <div class="container">
 
+
       <h2 class="section-title">
+
         🛠️ <span>Requirements</span>
+
       </h2>
+
 
       <div class="requirements-box">
 
+
         <div class="requirement">
 
-          <div class="requirement-icon">🔓</div>
+          <div class="requirement-icon">
+            🔓
+          </div>
 
-          <strong>Root Access</strong>
+          <strong>
+            Root Access
+          </strong>
 
           <p>
             Magisk or KernelSU
@@ -245,9 +517,13 @@
 
         <div class="requirement">
 
-          <div class="requirement-icon">🪟</div>
+          <div class="requirement-icon">
+            🪟
+          </div>
 
-          <strong>Overlay Permission</strong>
+          <strong>
+            Overlay Permission
+          </strong>
 
           <p>
             Required for the floating gesture interface
@@ -258,9 +534,13 @@
 
         <div class="requirement">
 
-          <div class="requirement-icon">⚙️</div>
+          <div class="requirement-icon">
+            ⚙️
+          </div>
 
-          <strong>Android</strong>
+          <strong>
+            Android
+          </strong>
 
           <p>
             Android device with root and system input support
@@ -268,11 +548,13 @@
 
         </div>
 
+
       </div>
 
     </div>
 
   </section>
+
 
 
   <!-- =========================
@@ -283,88 +565,266 @@
 
     <div class="container">
 
+
       <div class="footer-logo">
+
         <span class="de">De</span><span class="moni">moni</span><span class="draw">Draw</span>
+
       </div>
 
+
       <div class="version">
+
         Demonic Edition · v1.0.3
+
       </div>
+
 
       <p>
         Draw it. Trigger it. Automate it.
       </p>
 
+
       <p>
         Built for rooted Android automation and experimentation.
       </p>
 
+
       <p>
         © 2026 Jaypsmall
       </p>
+
 
     </div>
 
   </footer>
 
 
+
   <!-- =========================
-       THEME + SCREENSHOT LOGIC
+       THEME + NAVIGATION LOGIC
   ========================== -->
 
   <script>
 
-    const body = document.body;
-    const button = document.getElementById("themeButton");
 
-    const screen1 = document.getElementById("screen1");
-    const screen2 = document.getElementById("screen2");
+    const body =
+      document.body;
 
+
+    const themeButton =
+      document.getElementById("themeButton");
+
+
+    const appsButton =
+      document.getElementById("appsButton");
+
+
+    const appsDropdown =
+      document.getElementById("appsDropdown");
+
+
+    const screen1 =
+      document.getElementById("screen1");
+
+
+    const screen2 =
+      document.getElementById("screen2");
+
+
+    const themeColor =
+      document.querySelector(
+        'meta[name="theme-color"]'
+      );
+
+
+
+    /* =========================
+       SCREENSHOTS
+    ========================== */
 
     const screenshots = {
 
+
       dark: [
+
         "https://github.com/user-attachments/assets/b4b5169a-c6fb-404f-9294-74418d9e534f",
+
         "https://github.com/user-attachments/assets/71374956-2f3a-4f65-9632-699d76a3a4ef"
+
       ],
 
+
       light: [
+
         "https://github.com/user-attachments/assets/50d77c21-14aa-46a1-a0ba-29e6257bfc65",
+
         "https://github.com/user-attachments/assets/13df39c3-00c4-46cc-92ee-837722467fd2"
+
       ]
 
     };
 
 
-    let lightMode = false;
+
+    /* =========================
+       THEME
+    ========================== */
+
+    let lightMode =
+      localStorage.getItem("demonidraw-theme") === "light";
 
 
-    button.addEventListener("click", () => {
-
-      lightMode = !lightMode;
-
-      body.classList.toggle("light", lightMode);
+    function applyTheme() {
 
 
-      if (lightMode) {
+      body.classList.toggle(
+        "light",
+        lightMode
+      );
 
-        screen1.src = screenshots.light[0];
-        screen2.src = screenshots.light[1];
 
-        button.textContent = "🌙";
+      screen1.src =
+        screenshots[
+          lightMode ? "light" : "dark"
+        ][0];
 
-      } else {
 
-        screen1.src = screenshots.dark[0];
-        screen2.src = screenshots.dark[1];
+      screen2.src =
+        screenshots[
+          lightMode ? "light" : "dark"
+        ][1];
 
-        button.textContent = "☀️";
+
+      themeButton.textContent =
+        lightMode ? "🌙" : "☀️";
+
+
+      themeButton.setAttribute(
+        "aria-label",
+        lightMode
+          ? "Switch to dark theme"
+          : "Switch to light theme"
+      );
+
+
+      themeButton.setAttribute(
+        "aria-pressed",
+        String(lightMode)
+      );
+
+
+      themeColor.setAttribute(
+        "content",
+        lightMode
+          ? "#D1D5D8"
+          : "#070707"
+      );
+
+    }
+
+
+    applyTheme();
+
+
+
+    themeButton.addEventListener(
+      "click",
+      () => {
+
+        lightMode = !lightMode;
+
+        localStorage.setItem(
+          "demonidraw-theme",
+          lightMode ? "light" : "dark"
+        );
+
+        applyTheme();
 
       }
+    );
 
-    });
+
+
+    /* =========================
+       DEMONI APPS DROPDOWN
+    ========================== */
+
+    appsButton.addEventListener(
+      "click",
+      (event) => {
+
+        event.stopPropagation();
+
+        const isOpen =
+          appsDropdown.classList.toggle("open");
+
+        appsButton.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+      }
+    );
+
+
+
+    /* CLOSE DROPDOWN OUTSIDE */
+
+    document.addEventListener(
+      "click",
+      (event) => {
+
+        if (
+          !appsDropdown.contains(event.target) &&
+          !appsButton.contains(event.target)
+        ) {
+
+          appsDropdown.classList.remove(
+            "open"
+          );
+
+          appsButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+
+      }
+    );
+
+
+
+    /* CLOSE DROPDOWN AFTER SELECTING APP */
+
+    document
+      .querySelectorAll(".app-item")
+      .forEach(
+        (item) => {
+
+          item.addEventListener(
+            "click",
+            () => {
+
+              appsDropdown.classList.remove(
+                "open"
+              );
+
+              appsButton.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+            }
+          );
+
+        }
+      );
+
 
   </script>
+
 
 </body>
 </html>
