@@ -9,10 +9,8 @@
 ---
 
 <p align="center"> 
-
-<img src="https://github.com/user-attachments/assets/b4b5169a-c6fb-404f-9294-74418d9e534f" width="49%" /> 
-<img src="https://github.com/user-attachments/assets/71374956-2f3a-4f65-9632-699d76a3a4ef" width="49%" /> 
-
+<img src="https://github.com/user-attachments/assets/b4b5169a-c6fb-404f-9294-74418d9e534f" width="30%" /> 
+<img src="https://github.com/user-attachments/assets/71374956-2f3a-4f65-9632-699d76a3a4ef" width="30%" /> 
 </p>
  
 --- 
@@ -36,8 +34,8 @@
 --- 
 
 <p align="center"> 
-<img src="https://github.com/user-attachments/assets/50d77c21-14aa-46a1-a0ba-29e6257bfc65" width="49%" /> 
-<img src="https://github.com/user-attachments/assets/13df39c3-00c4-46cc-92ee-837722467fd2" width="49%" /> 
+<img src="https://github.com/user-attachments/assets/50d77c21-14aa-46a1-a0ba-29e6257bfc65" width="30%" /> 
+<img src="https://github.com/user-attachments/assets/13df39c3-00c4-46cc-92ee-837722467fd2" width="30%" /> 
 
 </p>
 
@@ -55,4 +53,5 @@
 
 Copyright © 2026.Todos los derechos reservados. El código fuente de esta aplicación es propiedad privada del desarrollador. Queda prohibida la reproducción, distribución o modificación no autorizada de este software.
 
-Desarrollado con 🧡 por un desarrollador independiente.
+Desarrollado con 💜 por un desarrollador independiente.
+**@Jaypsmall**
