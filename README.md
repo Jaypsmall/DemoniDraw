@@ -1,4 +1,4 @@
-# 😈 DemoniDraw (v1.0.3 - Demonic Edition) ![Android](https://img.shields.io/badge/Android-181717?style=flat&logo=android&logoColor=green) ![Kotlin](https://img.shields.io/badge/Kotlin-181717?style=flat&logo=kotlin&logoColor=C81AEE)
+# 😈 DemoniDraw (v1.0.3 - Demonic Edition) ![Android](https://img.shields.io/badge/Android-181717?style=flat&logo=android&logoColor=green) ![Kotlin](https://img.shields.io/badge/Kotlin-181717?style=flat&logo=kotlin&logoColor=C81AEE)  <a href="https://kotlinlang.org" target="_blank"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/kotlin/kotlin-original.svg" height="30" alt="Kotlin" />
 
 **😈 DemoniDraw** Apk es un potente motor de automatización de gestos táctiles para dispositivos Android rooteados. Utilizando un servicio flotante invisible y de baja latencia, la aplicación permite a los usuarios dibujar trazos a mano alzada en cualquier parte de la pantalla ("Disparadores visuales") para ejecutar instantáneamente macros complejas, scripts de consola, controles de procesos e inyecciones de eventos táctiles de bajo nivel. 
 
