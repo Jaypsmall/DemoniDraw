@@ -21,6 +21,18 @@ class GestureViewModel(application: Application) : AndroidViewModel(application)
     val gestures: StateFlow<List<GestureEntry>> = dao.getAllGestures()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    init {
+        viewModelScope.launch {
+            if (dao.getCount() == 0) {
+                dao.insertGesture(GestureEntry(name = "CÁMARA", action = "com.android.camera", isShellCommand = false))
+                dao.insertGesture(GestureEntry(name = "REBOOT", action = "reboot", isShellCommand = true))
+                dao.insertGesture(GestureEntry(name = "AJUSTES", action = "com.android.settings", isShellCommand = false))
+                dao.insertGesture(GestureEntry(name = "WHATSAPP", action = "com.whatsapp", isShellCommand = false))
+                dao.insertGesture(GestureEntry(name = "ROOT SHELL", action = "su", isShellCommand = true))
+            }
+        }
+    }
+
     fun addGesture(name: String, action: String, isShell: Boolean) {
         viewModelScope.launch {
             dao.insertGesture(GestureEntry(name = name, action = action, isShellCommand = isShell))

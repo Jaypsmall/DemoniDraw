@@ -8,6 +8,9 @@ interface GestureDao {
     @Query("SELECT * FROM gestures")
     fun getAllGestures(): Flow<List<GestureEntry>>
 
+    @Query("SELECT COUNT(*) FROM gestures")
+    suspend fun getCount(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGesture(gesture: GestureEntry): Long
 
