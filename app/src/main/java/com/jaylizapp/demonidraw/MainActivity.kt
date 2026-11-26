@@ -14,11 +14,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -115,6 +115,7 @@ import com.jaylizapp.demonidraw.ui.theme.AbyssBlack
 import com.jaylizapp.demonidraw.ui.theme.AshGrey
 import com.jaylizapp.demonidraw.ui.theme.BrimstoneYellow
 import com.jaylizapp.demonidraw.ui.theme.DeepBlood
+import com.jaylizapp.demonidraw.ui.theme.DemoniPurple
 import com.jaylizapp.demonidraw.ui.theme.DemonidrawTheme
 import com.jaylizapp.demonidraw.ui.theme.HellRed
 import com.jaylizapp.demonidraw.ui.theme.Obsidian
@@ -244,6 +245,31 @@ fun MainScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var gestureToEdit by remember { mutableStateOf<GestureEntry?>(null) }
     var showStorageDialog by remember { mutableStateOf(false) }
+    var showHelpDialog by remember { mutableStateOf(false) }
+    var showPortalScreen by remember { mutableStateOf(false) }
+
+    var titleTapCount by remember { mutableStateOf(0) }
+    var lastTapTime by remember { mutableStateOf(0L) }
+
+    val onTitleClick = {
+        val now = System.currentTimeMillis()
+        if (now - lastTapTime < 1200) {
+            titleTapCount++
+        } else {
+            titleTapCount = 1
+        }
+        lastTapTime = now
+
+        if (titleTapCount >= 5) {
+            titleTapCount = 0
+            showPortalScreen = true
+            Toast.makeText(
+                context,
+                if (isEnglish) "DemoniDraw Portal Activated! 😈" else "¡Portal Demoniaco Activado! 😈",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     val backgroundColor = if (isDarkMode) AbyssBlack else Color(0xFFD1D5D8)
     val contentColor = if (isDarkMode) Color.White else AbyssBlack
@@ -304,155 +330,268 @@ fun MainScreen(
                         val timestamp = System.currentTimeMillis()
                         exportLauncher.launch("DemoniDraw_Backup_$timestamp.json")
                         scope.launch { drawerState.close() }
+                    },
+                    onHelpClick = {
+                        showHelpDialog = true
+                        scope.launch { drawerState.close() }
                     }
                 )
             }
         }
     ) {
-        Scaffold(
-            containerColor = backgroundColor,
-            topBar = {
-                Column {
-                    TopAppBar(
-                        title = { StyledTitle() },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = contentColor)
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = backgroundColor,
-                            titleContentColor = contentColor,
-                            navigationIconContentColor = contentColor,
-                            actionIconContentColor = contentColor
-                        ),
-                        actions = {
-                            IconButton(onClick = onThemeToggle) {
-                                Crossfade(targetState = isDarkMode, animationSpec = tween(500)) { dark ->
-                                    Icon(
-                                        if (dark) Icons.Default.DarkMode else Icons.Default.NightsStay,
-                                        contentDescription = "Toggle Theme",
-                                        tint = contentColor
-                                    )
+        if (showPortalScreen) {
+            PortalScreen(isDarkMode = isDarkMode, onDismiss = { showPortalScreen = false }, isEnglish = isEnglish)
+        } else {
+            Scaffold(
+                containerColor = backgroundColor,
+                topBar = {
+                    Column {
+                        TopAppBar(
+                            title = { 
+                                Box(modifier = Modifier.clickable { onTitleClick() }) {
+                                    StyledTitle() 
+                                }
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(Icons.Default.Menu, contentDescription = "Menu", tint = contentColor)
+                                }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = backgroundColor,
+                                titleContentColor = contentColor,
+                                navigationIconContentColor = contentColor,
+                                actionIconContentColor = contentColor
+                            ),
+                            actions = {
+                                IconButton(onClick = onThemeToggle) {
+                                    Crossfade(targetState = isDarkMode, animationSpec = tween(500)) { dark ->
+                                        Icon(
+                                            if (dark) Icons.Default.DarkMode else Icons.Default.NightsStay,
+                                            contentDescription = "Toggle Theme",
+                                            tint = contentColor
+                                        )
+                                    }
                                 }
                             }
+                        )
+                        FadingSeparator()
+                    }
+                },
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { showAddDialog = true },
+                        containerColor = HellRed,
+                        contentColor = Color.White,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    ) {
+                        Icon(Icons.Default.Add, "Add")
+                    }
+                }
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Direct Canvas Button (Purple like DemoniTalk accessibility button)
+                    DemoniButton(
+                        text = if (isEnglish) "(Direct Canvas)" else "(Pizarra Directa)",
+                        containerColor = DemoniPurple,
+                        onClick = {
+                            val intent = Intent(context, DrawingActivity::class.java)
+                            context.startActivity(intent)
                         }
                     )
-                    FadingSeparator()
-                }
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { showAddDialog = true },
-                    containerColor = HellRed,
-                    contentColor = Color.White,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .shadow(elevation = 12.dp, shape = RoundedCornerShape(12.dp))
-                        .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                ) {
-                    Icon(Icons.Default.Add, "Add")
-                }
-            }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                DemoniButton(
-                    text = if (isEnglish) "Start Floating Button" else "Iniciar Botón Flotante",
-                    onClick = {
-                        if (!Settings.canDrawOverlays(context)) {
-                            val intent = Intent(
-                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                "package:${context.packageName}".toUri()
+
+                    // Buttons Row: Floating & Root
+                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            Button(
+                                onClick = {
+                                    if (!Settings.canDrawOverlays(context)) {
+                                        val intent = Intent(
+                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                            "package:${context.packageName}".toUri()
+                                        )
+                                        context.startActivity(intent)
+                                    } else {
+                                        val intent = Intent(context, FloatingService::class.java)
+                                        context.startForegroundService(intent)
+                                        Toast.makeText(context, if (isEnglish) "Service started" else "Servicio iniciado", Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = HellRed),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(48.dp)
+                            ) {
+                                Text(if (isEnglish) "Start Floating" else "Iniciar Botón", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(modifier = Modifier.weight(1f)) {
+                            Button(
+                                onClick = {
+                                    scope.launch(Dispatchers.IO) {
+                                        val hasRoot = ShellUtils.executeCommand("id")
+                                        withContext(Dispatchers.Main) {
+                                            if (hasRoot) {
+                                                Toast.makeText(context, if (isEnglish) "Root obtained!" else "Root obtenido!", Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                Toast.makeText(context, if (isEnglish) "Root failed" else "Fallo al obtener Root", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = DeepBlood),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier.fillMaxWidth().height(48.dp)
+                            ) {
+                                Text(if (isEnglish) "Request Root" else "Solicitar Root", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                            }
+                        }
+                    }
+
+                    // Quick Actions Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                            .border(1.dp, HellRed.copy(0.3f), RoundedCornerShape(16.dp)),
+                        colors = CardDefaults.cardColors(containerColor = if (isDarkMode) Obsidian else Color.White.copy(0.9f)),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = if (isEnglish) "QUICK ACTIONS" else "ACCIONES RÁPIDAS",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                letterSpacing = 1.sp,
+                                modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
                             )
-                            context.startActivity(intent)
-                        } else {
-                            val intent = Intent(context, FloatingService::class.java)
-                            context.startForegroundService(intent)
-                            Toast.makeText(context, if (isEnglish) "Service started" else "Servicio iniciado", Toast.LENGTH_SHORT).show()
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                QuickActionButton(
+                                    title = if (isEnglish) "Canvas" else "Pizarra",
+                                    color = DemoniPurple,
+                                    onClick = { context.startActivity(Intent(context, DrawingActivity::class.java)) }
+                                )
+                                QuickActionButton(
+                                    title = "Root",
+                                    color = HellRed,
+                                    onClick = {
+                                        scope.launch(Dispatchers.IO) {
+                                            val hasRoot = ShellUtils.executeCommand("id")
+                                            withContext(Dispatchers.Main) {
+                                                Toast.makeText(context, if (hasRoot) "Root OK ⚡" else "No Root ❌", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                )
+                                QuickActionButton(
+                                    title = if (isEnglish) "Floating" else "Flotante",
+                                    color = BrimstoneYellow,
+                                    onClick = {
+                                        if (!Settings.canDrawOverlays(context)) {
+                                            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:${context.packageName}".toUri())
+                                            context.startActivity(intent)
+                                        } else {
+                                            context.startForegroundService(Intent(context, FloatingService::class.java))
+                                            Toast.makeText(context, "Servicio iniciado 😈", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                )
+                                QuickActionButton(
+                                    title = if (isEnglish) "Help" else "Ayuda",
+                                    color = Color(0xFF2196F3),
+                                    onClick = { showHelpDialog = true }
+                                )
+                            }
                         }
                     }
-                )
-                DemoniButton(
-                    text = if (isEnglish) "Request Root Access" else "Solicitar Acceso Root",
-                    isSecondary = true,
-                    onClick = {
-                        scope.launch(Dispatchers.IO) {
-                            val hasRoot = ShellUtils.executeCommand("id")
-                            withContext(Dispatchers.Main) {
-                                if (hasRoot) {
-                                    Toast.makeText(context, if (isEnglish) "Root obtained!" else "Root obtenido!", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, if (isEnglish) "Root failed" else "Fallo al obtener Root", Toast.LENGTH_SHORT).show()
+
+                    Text(
+                        text = if (isEnglish) "GESTURE COMMANDS" else "GESTOS DE ACCIÓN",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (isDarkMode) AshGrey else Color.Gray,
+                        letterSpacing = 1.5.sp,
+                        modifier = Modifier.padding(start = 18.dp, top = 8.dp, bottom = 4.dp)
+                    )
+
+                    GestureList(
+                        gestures = gestures,
+                        onDelete = { viewModel.deleteGesture(it) },
+                        onLongClick = { gestureToEdit = it },
+                        isDarkMode = isDarkMode
+                    )
+                }
+                
+                if (showAddDialog) {
+                    AddGestureDialog(
+                        onDismiss = { showAddDialog = false },
+                        onConfirm = { name, action, isShell, predefinedGesture ->
+                            viewModel.addGesture(name, action, isShell)
+                            showAddDialog = false
+                            
+                            if (predefinedGesture != null) {
+                                val gestureManager = GestureManager(context)
+                                gestureManager.addGesture(name, predefinedGesture)
+                                Toast.makeText(context, if (isEnglish) "Gesture pre-configured!" else "Gesto pre-configurado!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                val intent = Intent(context, AddGestureActivity::class.java).apply {
+                                    putExtra("GESTURE_NAME", name)
                                 }
+                                context.startActivity(intent)
                             }
-                        }
-                    }
-                )
+                        },
+                        isDarkMode = isDarkMode,
+                        isEnglish = isEnglish
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                if (gestureToEdit != null) {
+                    EditGestureDialog(
+                        gesture = gestureToEdit!!,
+                        onDismiss = { gestureToEdit = null },
+                        onConfirm = { updatedGesture ->
+                            viewModel.updateGesture(updatedGesture)
+                            gestureToEdit = null
+                        },
+                        isDarkMode = isDarkMode
+                    )
+                }
 
-                GestureList(
-                    gestures = gestures,
-                    onDelete = { viewModel.deleteGesture(it) },
-                    onLongClick = { gestureToEdit = it },
-                    isDarkMode = isDarkMode
-                )
-            }
-            
-            if (showAddDialog) {
-                AddGestureDialog(
-                    onDismiss = { showAddDialog = false },
-                    onConfirm = { name, action, isShell, predefinedGesture ->
-                        viewModel.addGesture(name, action, isShell)
-                        showAddDialog = false
-                        
-                        if (predefinedGesture != null) {
-                            val gestureManager = GestureManager(context)
-                            gestureManager.addGesture(name, predefinedGesture)
-                            Toast.makeText(context, if (isEnglish) "Gesture pre-configured!" else "Gesto pre-configurado!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            val intent = Intent(context, AddGestureActivity::class.java).apply {
-                                putExtra("GESTURE_NAME", name)
-                            }
-                            context.startActivity(intent)
-                        }
-                    },
-                    isDarkMode = isDarkMode,
-                    isEnglish = isEnglish
-                )
-            }
+                if (showStorageDialog) {
+                    StorageDialog(
+                        onDismiss = { showStorageDialog = false },
+                        isEnglish = isEnglish,
+                        viewModel = viewModel
+                    )
+                }
 
-            if (gestureToEdit != null) {
-                EditGestureDialog(
-                    gesture = gestureToEdit!!,
-                    onDismiss = { gestureToEdit = null },
-                    onConfirm = { updatedGesture ->
-                        viewModel.updateGesture(updatedGesture)
-                        gestureToEdit = null
-                    },
-                    isDarkMode = isDarkMode
-                )
-            }
-
-            if (showStorageDialog) {
-                StorageDialog(
-                    onDismiss = { showStorageDialog = false },
-                    isEnglish = isEnglish,
-                    viewModel = viewModel
-                )
+                if (showHelpDialog) {
+                    HelpDialog(
+                        onDismiss = { showHelpDialog = false },
+                        isEnglish = isEnglish
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false) {
-    val containerColor = if (isSecondary) DeepBlood else HellRed
+fun DemoniButton(text: String, onClick: () -> Unit, containerColor: Color = HellRed, isSecondary: Boolean = false) {
+    val bgCol = if (isSecondary) DeepBlood else containerColor
     val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
     Button(
@@ -474,7 +613,7 @@ fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false
                 shape = RoundedCornerShape(12.dp)
             ),
         shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+        colors = ButtonDefaults.buttonColors(containerColor = bgCol),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 10.dp,
             pressedElevation = 2.dp
@@ -494,13 +633,35 @@ fun DemoniButton(text: String, onClick: () -> Unit, isSecondary: Boolean = false
 }
 
 @Composable
+fun QuickActionButton(title: String, color: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        shape = RoundedCornerShape(10.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
+        modifier = Modifier
+            .height(38.dp)
+            .shadow(4.dp, RoundedCornerShape(10.dp))
+    ) {
+        Text(
+            text = title,
+            color = Color.White,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
 fun DrawerContent(
     isDarkMode: Boolean, 
     isEnglish: Boolean, 
     onLanguageToggle: () -> Unit, 
     onStorageClick: () -> Unit,
     onImportClick: () -> Unit,
-    onExportClick: () -> Unit
+    onExportClick: () -> Unit,
+    onHelpClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -532,7 +693,7 @@ fun DrawerContent(
         Spacer(modifier = Modifier.height(16.dp))
         DrawerItem(label = if (isEnglish) "Export" else "Exportar", icon = Icons.Default.Download, onClick = onExportClick)
         Spacer(modifier = Modifier.height(16.dp))
-        DrawerItem(label = if (isEnglish) "Help" else "Ayuda", icon = Icons.AutoMirrored.Filled.Help)
+        DrawerItem(label = if (isEnglish) "Help" else "Ayuda", icon = Icons.AutoMirrored.Filled.Help, onClick = onHelpClick)
         
         Spacer(modifier = Modifier.weight(1f))
         
@@ -614,21 +775,20 @@ fun GestureItem(
     isDarkMode: Boolean
 ) {
     val cardBg = if (isDarkMode) Obsidian else Color.White
-    val textColor = if (isDarkMode) Color.White else AbyssBlack
     
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 14.dp, vertical = 6.dp)
+            .border(1.dp, HellRed.copy(0.4f), RoundedCornerShape(16.dp))
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = { onLongClick(gesture) }
                 )
             },
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -638,21 +798,23 @@ fun GestureItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Trigger: ${gesture.name}",
-                    fontWeight = FontWeight.Bold,
+                    text = gesture.name.uppercase(),
+                    fontWeight = FontWeight.Black,
                     style = MaterialTheme.typography.titleMedium,
-                    color = textColor
+                    color = HellRed
                 )
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "Action: ${gesture.action}",
+                    text = gesture.action,
                     style = MaterialTheme.typography.bodySmall,
                     color = AshGrey
                 )
                 if (gesture.isShellCommand) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "ROOT ACCESS",
-                        fontSize = 12.sp,
-                        color = if (isDarkMode) BrimstoneYellow else Color(0xFFC0A000),
+                        text = "ROOT SHELL COMMAND",
+                        fontSize = 10.sp,
+                        color = BrimstoneYellow,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -660,20 +822,13 @@ fun GestureItem(
             
             IconButton(
                 onClick = { onDelete(gesture) },
-                modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(40.dp)
-                    .border(
-                        width = 1.dp, 
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), 
-                        shape = CircleShape
-                    )
+                modifier = Modifier.size(36.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete, 
                     contentDescription = "Delete",
                     tint = HellRed,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
@@ -919,6 +1074,160 @@ fun EditGestureDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancel", color = textColor)
+            }
+        }
+    )
+}
+
+@Composable
+fun PortalScreen(isDarkMode: Boolean, onDismiss: () -> Unit, isEnglish: Boolean) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            StyledTitle(fontSize = 32, isCentered = true)
+            Spacer(modifier = Modifier.height(24.dp))
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, HellRed, RoundedCornerShape(20.dp)),
+                colors = CardDefaults.cardColors(containerColor = if (isDarkMode) Obsidian else Color.White),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (isEnglish) "😈 DEMONI PORTAL ACTIVATED 😈" else "😈 PORTAL DEMONÍACO ACTIVADO 😈",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = BrimstoneYellow,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = if (isEnglish)
+                            "You have unlocked the secret demon realm of DemoniDraw! Use Direct Drawing Canvas or Floating Trigger to automate touch gestures and root macros with demonic speed."
+                        else
+                            "¡Has desbloqueado el reino secreto de DemoniDraw! Usa la Pizarra Directa o el Botón Flotante para automatizar gestos y macros root con velocidad demoníaca.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isDarkMode) SoulWhite else AbyssBlack,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.buttonColors(containerColor = HellRed),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(if (isEnglish) "Close Portal" else "Cerrar Portal", color = Color.White, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HelpDialog(onDismiss: () -> Unit, isEnglish: Boolean) {
+    val dialogBg = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) Obsidian else Color.White
+    val textColor = if (MaterialTheme.colorScheme.background.luminance() < 0.5f) Color.White else AbyssBlack
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = dialogBg,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.AutoMirrored.Filled.Help, null, tint = HellRed, modifier = Modifier.size(28.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = if (isEnglish) "Help & Guide 📖" else "Ayuda y Guía 📖",
+                    color = HellRed,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 20.sp
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 420.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = if (isEnglish) "1. NON-FLOATING MODE (DIRECT CANVAS)" else "1. MODO SIN FLOTANTE (PIZARRA DIRECTA)",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = BrimstoneYellow,
+                    letterSpacing = 1.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isEnglish)
+                        "If your phone restricts floating windows (SYSTEM_ALERT_WINDOW), you can use 'Open Direct Canvas'. It launches the full-screen drawing board instantly without requiring overlay permissions."
+                    else
+                        "Si tu móvil no permite ventanas flotantes (permiso de superposición), puedes usar 'Abrir Pizarra Directa'. Abre la pizarra de dibujo en pantalla completa al instante sin requerir permisos especiales.",
+                    fontSize = 12.sp,
+                    color = textColor.copy(0.9f)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = if (isEnglish) "2. FLOATING BUTTON SERVICE" else "2. SERVICIO DE BOTÓN FLOTANTE",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = BrimstoneYellow,
+                    letterSpacing = 1.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isEnglish)
+                        "Allows you to invoke the gesture canvas as an invisible or floating trigger over any app or game. Double-tap to open app, triple-tap service trigger to stop."
+                    else
+                        "Permite invocar el lienzo de gestos sobre cualquier app o juego. Doble toque para abrir la app, triple toque en el activador para detener el servicio.",
+                    fontSize = 12.sp,
+                    color = textColor.copy(0.9f)
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = if (isEnglish) "3. GESTURES & ROOT MACROS" else "3. GESTOS Y MACROS ROOT",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = BrimstoneYellow,
+                    letterSpacing = 1.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (isEnglish)
+                        "Draw shapes (Square, Circle, Triangle, etc.) or custom strokes to execute shell scripts with root access ('su') or launch installed packages."
+                    else
+                        "Dibuja figuras (Cuadrado, Círculo, Triángulo, etc.) o trazos personalizados para ejecutar scripts shell con root ('su') o abrir apps instaladas.",
+                    fontSize = 12.sp,
+                    color = textColor.copy(0.9f)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(if (isEnglish) "GOT IT" else "ENTENDIDO", color = HellRed, fontWeight = FontWeight.Bold)
             }
         }
     )
